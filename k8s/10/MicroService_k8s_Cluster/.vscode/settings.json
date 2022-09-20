@@ -1,0 +1,8 @@
+{
+    "cSpell.words": [
+        "microservices"
+    ],
+    "yaml.schemas": {
+        "kubernetes://schema/apps/v1%40deployment": "file:///c%3A/Users/Babak/Desktop/DevOps/k8s/10/MicroService_k8s_Cluster/recomm.yaml"
+    }
+}
