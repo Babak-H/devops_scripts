@@ -1,2 +1,0 @@
-we have to save "kubeconfig" file for the gitlab-user as a "file variable" in the group variables so it is shared by all projects
-this will allow the gitlab runner to access the cluster from the runner's machine
