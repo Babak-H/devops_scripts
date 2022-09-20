@@ -1,0 +1,7 @@
+serviceMonitor:
+  enabled: true
+  labels:
+  # with label, associate the values with the monitoring cluster (prometheus cluster is located there)
+    release: monitoring
+
+redisAddress: redis://redis-cart:6379

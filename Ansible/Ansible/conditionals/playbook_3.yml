@@ -1,0 +1,13 @@
+-
+  name: Add name server entry if not already entered
+  hosts: localhost
+  tasks:
+  # shell module
+    - shell: cat /etc/resolv.conf
+    # get result of the shell command and save (register) it inside command_output variable
+      register: command_output
+
+    - shell: echo "nameserver 10.0.250.10" >> /etc/resolv.conf
+      when: command_output.stdout.find('10.0.250.10') == -1
+
+

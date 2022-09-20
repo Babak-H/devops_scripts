@@ -1,0 +1,7 @@
+-
+  name: Execute a date command on localhost
+  hosts: localhost
+  tasks:
+  # name is NOT a mandatory field, we can only write the module field (as key/value pair)
+    - name: Execute a date command
+      command: date

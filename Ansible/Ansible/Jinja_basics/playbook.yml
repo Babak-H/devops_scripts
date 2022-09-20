@@ -1,0 +1,55 @@
+
+-
+  name: Test Jinja2 Templating 1
+  hosts: localhost
+  vars:
+    first_name: james
+    last_name: bond
+  tasks:
+  - debug:
+      msg: 'The name is {{ last_name }}! {{ first_name }} {{ last_name | title }}!'
+
+
+-
+  name: Test Jinja2 Templating 2
+  hosts: localhost
+  vars:
+    array_of_numbers:
+      - 12
+      - 34
+      - 06
+      - 34
+  tasks:
+  - debug:
+      msg: 'Lowest = {{ array_of_numbers | min }}'
+
+
+-
+  name: Install Dependencies
+  hosts: localhost
+  vars:
+    web_dependencies:
+         - python
+         - python-setuptools
+         - python-dev
+         - build-essential
+         - python-pip
+         - python-mysqldb
+    sql_dependencies:
+         - python
+         - python-mysqldb
+  tasks:
+  - name: Install dependencies
+    apt: name='{{ item }}' state=present
+    with_items: '{{ web_dependencies | union(sql_dependencies) }}'
+
+
+-
+  name: Generate random file name
+  hosts: localhost
+  tasks:
+  - name: Install dependencies
+    file:
+      path: /tmp/random_file_{{ 1000 | random }}
+      state: touch
+

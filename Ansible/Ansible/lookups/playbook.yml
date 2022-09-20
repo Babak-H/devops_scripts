@@ -1,0 +1,27 @@
+# {{ lookup('FILE-TYPE', 'VALUE-TO-LOOKUP file=FILE-ADDRESS delimiter=CHARACTER-BETWEEN-COLUMNS') }}
+
+-
+  name: Test Connectivity
+  hosts: web_server
+  vars:
+  # web_server is the first item in the column. we want the first item after ',' that is after this word
+    ansible_ssh_pass: "{{ lookup('csvfile', 'web_server file=credentials.csv delimiter=,') }}"
+  tasks:
+  - name: Ping target host
+    ping:
+      data: "Test"
+
+
+-
+  name: Test Connectivity
+  hosts: web_server
+  vars:
+    ansible_ssh_pass: "{{ lookup('ini', 'password section=web_server file=credentials.ini') }}"
+  tasks:
+  - name: Ping target host
+    ping:
+           data: "Test"
+
+
+
+ 

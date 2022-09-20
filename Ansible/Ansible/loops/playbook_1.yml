@@ -1,0 +1,23 @@
+# sample ansible playbook
+
+-
+  name: Install Packages
+  hosts: localhost
+  tasks:
+    # yum is ansible module, for installing packages on centos machines
+    - yum: name='{{ item }}' state=present
+    # with_items will loop through this yaml list and install the packages in this order
+      with_items:
+            - httpd
+            - binutils
+            - glibc
+            - ksh
+            - libaio
+            - libXext
+            - gcc
+            - make
+            - sysstat
+            - unixODBC
+            - mongodb
+            - nodejs
+            - grunt

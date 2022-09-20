@@ -1,0 +1,84 @@
+-
+  name: Deploy a web application
+  hosts: app_servers
+  # if any of the hosts can't complete a task and fails, fail and stop the whole process for all hosts
+  any_errors_fatal: True
+  # run on only two servers at once
+  # serial: 2
+
+  # run on only 20% of all servers at once
+  # serial: "20%"
+
+  # run on each server on its own speed, don't wait for other hosts to finish a task for going to next task
+  # strategy: free
+
+  # run all tasks on first 2, then next 3 and then last 5 target machines
+  serial: 
+    - 2
+    - 3
+    - 5
+
+  vars:
+    db_name: employee_db
+    db_user: db_user
+    db_password: Passw0rd
+  tasks:
+
+    - name: Install dependencies
+      apt: name={{ item }} state=installed
+      with_items:
+       - python
+       - python-setuptools
+       - python-dev
+       - build-essential
+       - python-pip
+       - python-mysqldb
+
+
+    - name: Install MySQL database
+      apt:
+        name: "{{ item }}"
+        state:  installed
+      with_items:
+       - mysql-server
+       - mysql-client
+
+
+    - name: Start Mysql Service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+
+    - name: Create Application Database
+      mysql_db: name={{ db_name }} state=present
+
+
+    - name: Create Application DB User
+      mysql_user: name={{ db_user }} password={{ db_password }} priv='*.*:ALL' host='%' state='present'
+
+
+    - name: Install Python Flask dependencies
+      pip:
+        name: '{{ item }}'
+        state: present
+      with_items:
+       - flask
+       - flask-mysql
+
+
+    - name: Copy web-server code
+      copy: src=app.py dest=/opt/app.py
+
+
+    - name: Start web-application
+      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+
+    - name: "Send notification email"
+      mail:
+        to: devops@corps.io
+        subject: server deployed!
+        body: web server deployed successfully
+      # even if the email can't be sent, do not throw any errors
+      ignore_errors: yes

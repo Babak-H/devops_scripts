@@ -1,0 +1,46 @@
+-
+  name: Deploy a mysql db 
+  hosts: db_server
+  roles:
+  # the order that we apply the roles is important
+    - python
+    - mysql_db
+
+-
+  name: Deploy a web server
+  hosts: web_server
+  roles:
+    - python
+    - flask_web
+
+## ASYNCH PLAYS ##
+-
+  name: Monitor Web Application for 6 Minutes
+  hosts: web_server
+  command: /opt/monitor_webapp.py
+  # async: how long to wait until task is done (seconds)
+  async: 360
+  # poll : how often ansible checks the process (seconds)
+  # poll: 30
+  # Setting poll to zero will make sure current taks and the ones below it run at same time
+  poll: 0
+  register: webapp_result
+
+-
+  name: Monitor Database for 6 Minutes
+  hosts: db_server
+  command: /opt/monitor_database.py
+  async: 360
+  # Setting poll to zero will make sure current taks and the ones below it run at same time
+  poll: 0
+  register: database_result
+
+
+- 
+  name: Check status of tasks
+  async_status: jid={{ webapp_result.ansible_job_id }}
+  register: job_result
+  until: job_result.finished
+  retries: 30
+
+  

@@ -1,0 +1,12 @@
+deploy web app to cloud provider
+deploy servers  => aws
+** there are Roles available for AWS for deploying to cloud
+** there are git modules to deploy to/from github
+** secure credentials using ansible vault
+designate web/db server
+install dependencies
+install flask + mysql  => distributed model
+download code from github  => github
+start running services
+configure load balancing => nginx | elastic load balancing aws
+notify users by email

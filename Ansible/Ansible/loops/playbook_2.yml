@@ -1,0 +1,15 @@
+-
+  name: Print list of fruits
+  hosts: localhost
+  # custom yaml list
+  fruits:
+    - Apple
+    - Banana
+    - Grapes
+    - Orange
+  tasks:
+  # will loop through each item (from fruits list)
+    - command: echo "{{ item }}"
+      with_items: '{{ fruits }}'
+
+

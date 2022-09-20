@@ -1,0 +1,47 @@
+apiVersion: monitoring.coreos.com/v1
+# we write this prometheus rules file as CRD kubernetes object
+kind: PrometheusRules
+metadata: 
+  name: main-rules
+  # our prometheus stack is in the monitoring namespace
+  namespace: monitoring
+  # we need these labels so that prometheus will know this file is about alert rules and will update the rules with these new ones
+  labels:
+    app: kube-prometheus-stack
+    release: monitoring
+spec:
+  groups: 
+  - name: main.rules
+    rules:
+    # what is the name of this alert rule
+    - alert: HostHighCpuLoad
+      # prometheus query expression executed for this rule
+      expr: 100 - ((avg by rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 50
+      # how long to test for this, since first the condition triggers, until we send response
+      for: 2m
+      labels:
+        # the level of the alert rule
+        severity: warning
+        namespace: monitoring
+      annotations:
+        # alert description that is shown to the user on the UI / email
+        description: "CPU load on host is over 50%\n Value = {{ $value }}\n Instance = {{ $label.instance }}\n"
+        summary: " HOST CPU load high"
+
+        # node_cpu_seconds_total{mode="idle"}[2m]) => how much of cpu is idle during 2 minutes period
+
+        # avg by rate(node_cpu_seconds_total{mode="idle"}[2m]) => give us the average of it for each node by 0-1 Value
+
+        # 100 - ((avg by rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) => calculate it by percentage, then subtract from 100 to find % of active cpu
+
+    - alert: KubernetesPodCrashLooping
+    # if pod has restarted more than 5 times, immediately raise a critical alert
+      expr: kube_pod_container_status_restarts_total > 5
+      for: 0m
+      labels:
+        severity: critical
+        namespace: monitoring
+      annotations:
+        description: "Pod {{ $label.pod }} is crash looping\n Value = {{ $value }}"
+        summary: "Kubernetes pod crash looping"
+
