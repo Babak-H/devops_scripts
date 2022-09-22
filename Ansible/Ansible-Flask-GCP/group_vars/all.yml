@@ -1,0 +1,19 @@
+# all is default group that is created by ansible, so all hosts can have access to variables that are defined in this group
+db_name: employee_db
+db_user: db_user
+db_user_password: Passw0rd
+
+ansible_user: <USERNAME>
+ansible_ssh_private_key_file: ~/.ssh/google_compute_engine
+
+db_instances: db-server
+web_instances: web-server-1, web-server-2
+gcp_project: ansible-project
+gcp_cred_kind: serviceaccount
+gcp_cred_file: /home/ansible-service-account.json
+zone: "us-central1-a"
+region: "us-central1"
+source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-l$
+gce_machine_type: n1-standard-1
+project_id: ansible-project-363309
+service_account_email: ansible@ansible-project-363309.iam.gserviceaccount.com

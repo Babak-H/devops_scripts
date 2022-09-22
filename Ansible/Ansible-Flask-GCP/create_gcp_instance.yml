@@ -1,0 +1,75 @@
+- name: Create cloud instances
+  hosts: localhost
+
+  tasks:
+    - name: Launch web instances
+      gcp_compute_instance:
+        name: "{{web_instances}}"
+        machine_type: "{{gce_machine_type}}"
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: "{{source_image}}"
+        network_interfaces:
+          - network:
+              selfLink: global/networks/default
+        metadata:
+          managed-by: "Ansible"
+          ssh-keys: ":\n"
+        zone: "{{zone}}"
+        project: "{{gcp_project}}"
+        auth_kind: serviceaccount
+        service_account_contents: "{{gcp_cred_file}}"
+        state: present
+        status: RUNNING
+      register: web_deploy_result
+
+    - name: Launch db instance
+      gcp_compute_instance:
+        name: "{{db-instances}}"
+        machine_type: "{{gce_machine_type}}"
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: "{{source_image}}"
+        network_interfaces:
+          - network:
+              selfLink: global/networks/default
+        metadata:
+          managed-by: "Ansible"
+          ssh-keys: ":\n"
+        zone: "{{zone}}"
+        project: "{{gcp_project}}"
+        auth_kind: serviceaccount
+        # The contents of a Service Account JSON file, either in a dictionary or as a JSON string that represents it
+        service_account_contents: "{{gcp_cred_file}}"
+        state: present
+        status: RUNNING
+      register: db_deploy_result
+
+    - name: Display Results
+      debug:
+        msg:
+          - "{{web_deploy_result}}"
+          - "{{db_deploy_result}}"
+
+    - name: Add web-servers to dynamic in-memory inventory
+      # this module helps us to create in-memory inventory file, without the need to create the file itself
+      add_host:
+        hostname: "{{ item.public_ip }}"
+        private_ip: "{{ item.private_ip }}"
+        db_server_ip: "{{ db_deploy_result.instance_data[0].private_ip }}"
+        group_name: web_servers
+      # get the result from previous task to find the info
+      with_items: "{{ web_deploy_result.instance_data }}"
+
+    - name: Add db-servers to dynamic in-memory inventory
+      # this module helps us to create in-memory inventory file, without the need to create the file itself
+      add_host:
+        hostname: "{{ item.public_ip }}"
+        private_ip: "{{ item.private_ip }}"
+        group_name: db_servers
+      # get the result from previous task to find the info
+      with_items: "{{ db_deploy_result.instance_data }}"

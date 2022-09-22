@@ -1,0 +1,36 @@
+- name: Set up networking
+  hosts: localhost
+  tasks:
+    - name: Alow HTTP Traffic
+      gce_net:
+        name: default
+        fwname: "allow-http"
+        allowed: tcp:80
+        state: "present"
+        project_id: "{{ project_id }}"
+        credentials_file: "{{ gcp_cred_file }}"
+        service_account_email: "{{ service_account_email }}"
+
+    - name: Configure load balancer
+      gce_lb:
+        name: testlb
+        region: us-central1
+        members: ["us-central1-a/web-server-1", "us-central1-b/web-server-2"]
+        httphealthcheck_name: hc
+        httphealthcheck_port: 80
+        httphealthcheck_path: "/up"
+        project_id: "{{ project_id }}"
+        credentials_file: "{{ gcp_cred_file }}"
+        service_account_email: "{{ service_account_email }}"
+      register: load_balancer_results
+
+    - name: Send notification email
+      mail:
+        host: smtp.gmail.com
+        port: 465
+        username: <Sender-Email>
+        # encrypted variable for the sender's account pass
+        password: "{{ g_password }}"
+        to: <Target-Email>
+        subject: Ansible job completed!
+        body: "Automation finished, visit your web app at th URL http://{{ load_balancer_results.external_ip }}"

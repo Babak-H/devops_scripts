@@ -1,0 +1,19 @@
+- name: Install Python Flask dependencies
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - flask
+    - flask-mysql
+
+- name: Download source code
+  git:
+    repo: "https://github.com/mmumshad/simple-webapp.git"
+    dest: /opt/simple-webapp
+
+- name: print command
+  debug:
+    msg: MYSQL_DATABASE_HOST={{ db_server_ip }}
+
+- name: Start web-application
+  shell: MYSQL_DATABASE_HOST={{ db_server_ip }} FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
