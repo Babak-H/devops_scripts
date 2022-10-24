@@ -172,3 +172,35 @@ minikube addons enable metrics-server
 kubectl top pod
 # shows hardware usage for entire cluster
 kubectl top node
+
+
+# Job
+# create a job
+kubectl apply -f [job-definition.yml]
+# list all jobs
+kubectl get job
+# describe a job
+kubectl describe job [JobName]
+# delete a job
+kubectl delete -f [job-definition.yml]
+kubectl delete job [JobName]
+
+
+# Rolling Updates
+# get the progess of the update status
+kubectl rollout status
+# get history of the deployment
+kubectl rollout history deployment [deplayment-name]
+# rollnback the deployment update
+kubectl rollout undo [deplayment-name]
+
+
+
+# Horizontal Pod Autoscaler HPA
+# apply the Scaler
+kubectl apply -f [hpa.yml]
+# get autoscaler status
+kubectl get hpa [name]
+# delete autoscaler
+kubectl delete -f [hpa.yml]
+kubectl delete hpa [name]
