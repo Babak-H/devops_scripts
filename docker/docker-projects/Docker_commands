@@ -1,0 +1,2 @@
+# get password from Jenkins docker image
+docker exec aa26f3b2c190 cat /var/jenkins_home/secrets/initialAdminPassword
